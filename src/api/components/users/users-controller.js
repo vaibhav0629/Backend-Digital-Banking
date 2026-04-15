@@ -1,6 +1,7 @@
+/* eslint-disable no-underscore-dangle */
 const usersService = require('./users-service');
 const { errorResponder, errorTypes } = require('../../../core/errors');
-const { hashPassword } = require('../../../utils/password');
+const { hashPassword, passwordMatched } = require('../../../utils/password');
 
 async function getUsers(request, response, next) {
   try {
@@ -14,7 +15,7 @@ async function getUsers(request, response, next) {
 
 async function getUser(request, response, next) {
   try {
-    const user = await usersService.getUser(request.params.id);
+    const user = await usersService.getUser(request.user._id);
 
     if (!user) {
       throw errorResponder(errorTypes.UNPROCESSABLE_ENTITY, 'User not found');
@@ -99,12 +100,6 @@ async function updateUser(request, response, next) {
   try {
     const { email, full_name: fullName } = request.body;
 
-    // User must exist
-    const user = await usersService.getUser(request.params.id);
-    if (!user) {
-      throw errorResponder(errorTypes.UNPROCESSABLE_ENTITY, 'User not found');
-    }
-
     // Email is required and cannot be empty
     if (!email) {
       throw errorResponder(errorTypes.VALIDATION_ERROR, 'Email is required');
@@ -119,7 +114,10 @@ async function updateUser(request, response, next) {
     }
 
     // Email must be unique, if it is changed
-    if (email !== user.email && (await usersService.emailExists(email))) {
+    if (
+      email !== request.user.email &&
+      (await usersService.emailExists(email))
+    ) {
       throw errorResponder(
         errorTypes.EMAIL_ALREADY_TAKEN,
         'Email already exists'
@@ -127,7 +125,7 @@ async function updateUser(request, response, next) {
     }
 
     const success = await usersService.updateUser(
-      request.params.id,
+      request.user._id,
       email,
       fullName
     );
@@ -171,12 +169,85 @@ async function changePassword(request, response, next) {
   //
   // If all conditions are met, update the user's password and return
   // a success response.
-  return next(errorResponder(errorTypes.NOT_IMPLEMENTED));
+  try {
+    // eslint-disable-next-line prefer-destructuring
+    const user = request.user;
+
+    const {
+      old_password: oldPassword,
+      new_password: newPassword,
+      confirm_new_password: confirmNewPassword,
+    } = request.body;
+
+    if (!oldPassword) {
+      throw errorResponder(
+        errorTypes.INVALID_PASSWORD,
+        'Old Password is blank'
+      );
+    }
+
+    if (!newPassword) {
+      throw errorResponder(
+        errorTypes.UNPROCESSABLE_ENTITY,
+        'New Password is blank'
+      );
+    }
+
+    if (!confirmNewPassword) {
+      throw errorResponder(
+        errorTypes.UNPROCESSABLE_ENTITY,
+        'Confirm Password is blank'
+      );
+    }
+
+    // The password is at least 8 characters long
+    if (newPassword.length < 8) {
+      throw errorResponder(
+        errorTypes.VALIDATION_ERROR,
+        'Password must be at least 8 characters long'
+      );
+    }
+
+    // The password and confirm password must match
+    if (newPassword !== confirmNewPassword) {
+      throw errorResponder(
+        errorTypes.VALIDATION_ERROR,
+        'New Password and confirm password do not match'
+      );
+    }
+
+    if (oldPassword === newPassword) {
+      throw errorResponder(errorTypes.VALIDATION_ERROR, 'Password is the same');
+    }
+
+    const match2 = await passwordMatched(oldPassword, user.password);
+    if (!match2) {
+      throw errorResponder(errorTypes.INVALID_PASSWORD, 'Password is wrong');
+    }
+
+    // hash password
+    const newPasswordHash = await hashPassword(newPassword);
+    const success = await usersService.changePassword(
+      user._id,
+      newPasswordHash
+    );
+    if (!success) {
+      throw errorResponder(
+        errorTypes.UNPROCESSABLE_ENTITY,
+        'Failed to update password'
+      );
+    }
+    return response
+      .status(200)
+      .json({ message: 'Successfully changed user password' });
+  } catch (error) {
+    return next(error);
+  }
 }
 
 async function deleteUser(request, response, next) {
   try {
-    const success = await usersService.deleteUser(request.params.id);
+    const success = await usersService.deleteUser(request.user._id);
 
     if (!success) {
       throw errorResponder(
