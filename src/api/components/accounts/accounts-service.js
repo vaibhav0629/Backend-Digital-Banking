@@ -8,8 +8,8 @@ async function getAccount(id) {
   return accountsRepository.getAccount(id);
 }
 
-async function getAccountByUserId(userId) {
-  return accountsRepository.getAccount(userId);
+async function getAccountByUserId(userId, accountType) {
+  return accountsRepository.getAccount(userId, accountType);
 }
 
 async function getBalance(id) {
