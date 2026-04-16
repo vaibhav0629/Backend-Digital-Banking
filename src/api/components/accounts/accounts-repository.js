@@ -86,5 +86,6 @@ module.exports = {
   getPin,
   getAccountByAccountNumber,
   createAccount,
-  deleteAccountsByUserId
+  deleteAccountsByUserId,
+  getAccountId,
 };
