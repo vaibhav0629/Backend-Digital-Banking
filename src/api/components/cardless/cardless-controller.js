@@ -73,7 +73,7 @@ async function withdraw(req, res, next) {
     if (totalRemaining < 0) {
       throw errorResponder(
         errorTypes.UNPROCESSABLE_ENTITY,
-        'Withdrawal ammount exceeds balance'
+        'Withdrawal amount exceeds balance'
       );
     }
     const success = await accountsService.setBalance(accountId, totalRemaining);
