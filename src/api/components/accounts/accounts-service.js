@@ -9,7 +9,11 @@ async function getAccount(id) {
 }
 
 async function getAccountByUserId(userId, accountType) {
-  return accountsRepository.getAccount(userId, accountType);
+  return accountsRepository.getAccountByUserId(userId, accountType);
+}
+
+async function getAccountId(id) {
+  return accountsRepository.getAccountId(id);
 }
 
 async function getBalance(id) {
@@ -26,4 +30,5 @@ module.exports = {
   getAccountByUserId,
   getBalance,
   setBalance,
+  getAccountId,
 };
