@@ -29,7 +29,7 @@ async function deposit(req, res, next) {
     }
     const success = await accountsService.setBalance(
       accountId,
-      (await accountsService.getBalance(accountId)) + ammount
+      account.balance + ammount
     );
     if (!success) {
       throw errorResponder(

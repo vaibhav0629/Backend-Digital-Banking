@@ -1,6 +1,7 @@
 const express = require('express');
 
 const accountsController = require('./accounts-controller');
+const authMiddle = require('../../middleware/auth-middleware');
 
 const route = express.Router();
 
@@ -8,10 +9,10 @@ module.exports = (app) => {
   app.use('/accounts', route);
 
   // Get list of accounts
-  route.get('/', accountsController.getAccounts);
+  route.get('/', authMiddle.UserAuth, accountsController.getAccounts);
 
   // Create a new account
-  route.post('/', accountsController.createAccount);
+  route.post('/', authMiddle.UserAuth, accountsController.createAccount);
 
   // Get account by user id
   route.get('/user/:userId', accountsController.getAccountByUserId);

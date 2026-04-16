@@ -4,11 +4,14 @@ const { errorResponder, errorTypes } = require('../../../core/errors');
 
 async function getBeneficiaries(req, res, next) {
   try {
-    const userId = req.params.id;
+    const userId = req.user.id;
 
     const account = await accountsService.getAccountByUserId(userId);
     if (!account) {
-      throw errorResponder(errorTypes.UNPROCESSABLE_ENTITY, 'Account not found');
+      throw errorResponder(
+        errorTypes.UNPROCESSABLE_ENTITY,
+        'Account not found'
+      );
     }
 
     const accountId = await accountsService.getAccountId(account);
