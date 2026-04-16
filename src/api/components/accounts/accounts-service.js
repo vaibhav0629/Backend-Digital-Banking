@@ -38,8 +38,12 @@ async function getAccount(id) {
   return accountsRepository.getAccount(id);
 }
 
-async function getAccountByUserId(userId) {
-  return accountsRepository.getAccountByUserId(userId);
+async function getAccountByUserId(userId, accountType) {
+  return accountsRepository.getAccountByUserId(userId, accountType);
+}
+
+async function getAccountId(id) {
+  return accountsRepository.getAccountId(id);
 }
 
 async function getBalance(id) {
@@ -193,4 +197,6 @@ module.exports = {
   authorizeTransaction,
   createAccount,
   updatePin,
+};
+  getAccountId,
 };
