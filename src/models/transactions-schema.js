@@ -11,7 +11,7 @@ module.exports = (db) =>
         },
         type: {
           type: String,
-          enum: ['deposit', 'invest', 'transfer', 'withdraw'],
+          enum: ['deposit', 'transfer', 'withdraw'],
           required: true,
         },
         amount: {
