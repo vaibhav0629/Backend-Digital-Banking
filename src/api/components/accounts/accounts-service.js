@@ -197,6 +197,5 @@ module.exports = {
   authorizeTransaction,
   createAccount,
   updatePin,
-};
   getAccountId,
 };
