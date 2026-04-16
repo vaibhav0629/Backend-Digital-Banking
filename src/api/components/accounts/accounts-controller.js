@@ -14,6 +14,20 @@ async function getAccounts(req, res, next) {
   }
 }
 
+async function createAccount(req, res, next) {
+  try {
+    const account = await accountsService.createAccount(req.body);
+
+    return res.status(201).json({
+      status: 'success',
+      message: 'Account created successfully',
+      data: account,
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
+
 async function getAccount(req, res, next) {
   try {
     const { id } = req.params;
@@ -39,9 +53,9 @@ async function getAccount(req, res, next) {
 async function getAccountByUserId(req, res, next) {
   try {
     const { userId } = req.params;
-    const account = await accountsService.getAccountByUserId(userId);
+    const accounts = await accountsService.getAccountByUserId(userId);
 
-    if (!account) {
+    if (!accounts || accounts.length === 0) {
       return res.status(404).json({
         status: 'fail',
         message: 'Account not found',
@@ -50,8 +64,8 @@ async function getAccountByUserId(req, res, next) {
 
     return res.status(200).json({
       status: 'success',
-      message: 'Account retrieved successfully',
-      data: account,
+      message: 'Accounts retrieved successfully',
+      data: accounts,
     });
   } catch (error) {
     return next(error);
@@ -109,11 +123,35 @@ async function setPin(req, res, next) {
   }
 }
 
+async function updatePin(req, res, next) {
+  try {
+    const { id } = req.params;
+    const { oldPin, newPin, confirmNewPin } = req.body;
+
+    const account = await accountsService.updatePin(
+      id,
+      oldPin,
+      newPin,
+      confirmNewPin
+    );
+
+    return res.status(200).json({
+      status: 'success',
+      message: 'PIN updated successfully',
+      data: account,
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
+
 module.exports = {
   getAccounts,
+  createAccount,
   getAccount,
   getAccountByUserId,
   getBalance,
   setBalance,
   setPin,
+  updatePin,
 };

@@ -9,7 +9,7 @@ async function getAccount(id) {
 }
 
 async function getAccountByUserId(userId) {
-  return Accounts.findOne({ userId });
+  return Accounts.find({ userId });
 }
 
 async function getBalance(id) {
@@ -62,6 +62,10 @@ async function getAccountByAccountNumber(accountNumber) {
   return Accounts.findOne({ accountNumber });
 }
 
+async function createAccount(payload) {
+  return Accounts.create(payload);
+}
+
 module.exports = {
   getAccounts,
   getAccount,
@@ -71,4 +75,5 @@ module.exports = {
   setPin,
   getPin,
   getAccountByAccountNumber,
+  createAccount,
 };

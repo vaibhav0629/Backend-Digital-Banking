@@ -10,6 +10,9 @@ module.exports = (app) => {
   // Get list of accounts
   route.get('/', accountsController.getAccounts);
 
+  // Create a new account
+  route.post('/', accountsController.createAccount);
+
   // Get account by user id
   route.get('/user/:userId', accountsController.getAccountByUserId);
 
@@ -19,8 +22,11 @@ module.exports = (app) => {
   // Update account balance
   route.patch('/:id/balance', accountsController.setBalance);
 
-  // Set account transaction PIN
+  // Initial / direct set account transaction PIN
   route.patch('/:id/pin', accountsController.setPin);
+
+  // Update account transaction PIN using old PIN
+  route.patch('/:id/pin/update', accountsController.updatePin);
 
   // Get account detail
   route.get('/:id', accountsController.getAccount);
