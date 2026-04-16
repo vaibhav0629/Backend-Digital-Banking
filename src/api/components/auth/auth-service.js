@@ -1,6 +1,7 @@
 const UserService = require('../users/users-service');
 const JWT = require('jsonwebtoken');
 const { passwordMatched } = require('../../../utils/password');
+const accountService = require('../accounts/accounts-service');
 
 function generateToken(email) {
   const secretKey = process.env.SECRET_KEY;
@@ -29,7 +30,18 @@ async function checkLogin(email, password) {
   return null;
 }
 
+async function doTransaction(accountID, pin) {
+  const auth = accountService.authorizeTransaction(accountID, pin);
+  if (auth) {
+    return {
+      token: generateToken(accountID),
+    };
+  }
+  return null;
+}
+
 module.exports = {
   checkLogin,
   generateToken,
+  doTransaction,
 };

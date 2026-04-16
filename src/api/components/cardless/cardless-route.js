@@ -9,10 +9,14 @@ const route = express.Router();
 module.exports = (app) => {
   app.use('/cardless', route);
 
-  route.post('/deposit/', authMiddleware.UserAuth, cardlessController.deposit);
+  route.post(
+    '/deposit/',
+    authMiddleware.TransactAuth,
+    cardlessController.deposit
+  );
   route.post(
     '/withdraw/',
-    authMiddleware.UserAuth,
+    authMiddleware.TransactAuth,
     cardlessController.withdraw
   );
 };
