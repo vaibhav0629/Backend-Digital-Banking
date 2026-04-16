@@ -1,27 +1,26 @@
 const express = require('express');
 
 const usersController = require('./users-controller');
+const authMiddleware = require('../../middleware/auth-middleware');
 
 const route = express.Router();
 
 module.exports = (app) => {
   app.use('/users', route);
 
-  // Get list of users
-  route.get('/', usersController.getUsers);
-
-  // Create a new user
-  route.post('/', usersController.createUser);
-
   // Get user detail
-  route.get('/:id', usersController.getUser);
+  route.get('/', authMiddleware.UserAuth, usersController.getUser);
 
   // Update user
-  route.put('/:id', usersController.updateUser);
+  route.put('/', authMiddleware.UserAuth, usersController.updateUser);
 
   // Change password
-  route.put('/:id/change-password', usersController.changePassword);
+  route.put(
+    '/change-password',
+    authMiddleware.UserAuth,
+    usersController.changePassword
+  );
 
   // Delete user
-  route.delete('/:id', usersController.deleteUser);
+  route.delete('/', authMiddleware.UserAuth, usersController.deleteUser);
 };
