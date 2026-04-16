@@ -72,6 +72,10 @@ async function createAccount(payload) {
   return Accounts.create(payload);
 }
 
+async function deleteAccountsByUserId(userId) {
+  return Accounts.deleteMany({ userId });
+}
+
 module.exports = {
   getAccounts,
   getAccount,
@@ -82,4 +86,5 @@ module.exports = {
   getPin,
   getAccountByAccountNumber,
   createAccount,
+  deleteAccountsByUserId
 };
