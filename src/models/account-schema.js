@@ -1,12 +1,20 @@
-module.exports = (db) =>
-  db.model(
-    'Account',
-    db.Schema({
+module.exports = (mongoose) =>
+  mongoose.model(
+    'Accounts',
+    new mongoose.Schema({
       userId: {
-        type: db.Schema.Types.ObjectId,
-        ref: 'User',
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Users',
+        required: true,
       },
-      balance: Number,
-      isActive: Boolean,
+      balance: {
+        type: Number,
+        default: 0,
+      },
+      accountNumber: {
+        type: String,
+        required: true,
+        unique: true,
+      },
     })
   );
