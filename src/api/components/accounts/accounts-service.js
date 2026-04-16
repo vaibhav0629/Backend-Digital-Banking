@@ -194,7 +194,6 @@ async function deleteAccountsByUserId(userId) {
   return accountsRepository.deleteAccountsByUserId(userId);
 }
 
-
 module.exports = {
   getAccounts,
   getAccount,
