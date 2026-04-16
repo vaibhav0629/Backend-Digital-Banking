@@ -1,5 +1,5 @@
 const accountsRepository = require('./accounts-repository');
-const { hashPassword, comparePassword } = require('../../../utils/password');
+const { hashPassword, passwordMatched } = require('../../../utils/password');
 
 function generateRandomAccountNumber(length = 10) {
   let result = '';
@@ -82,7 +82,7 @@ async function verifyPin(id, pin) {
     throw new Error('PIN has not been set for this account');
   }
 
-  return comparePassword(pin, hashedPin);
+  return passwordMatched(pin, hashedPin);
 }
 
 async function authorizeTransaction(id, pin) {
@@ -186,6 +186,15 @@ async function updatePin(id, oldPin, newPin, confirmNewPin) {
   return accountsRepository.setPin(id, hashedNewPin);
 }
 
+async function deleteAccountsByUserId(userId) {
+  if (!userId) {
+    throw new Error('userId is required');
+  }
+
+  return accountsRepository.deleteAccountsByUserId(userId);
+}
+
+
 module.exports = {
   getAccounts,
   getAccount,
@@ -198,4 +207,5 @@ module.exports = {
   createAccount,
   updatePin,
   getAccountId,
+  deleteAccountsByUserId,
 };
