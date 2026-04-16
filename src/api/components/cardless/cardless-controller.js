@@ -4,15 +4,30 @@ const { errorResponder, errorTypes } = require('../../../core/errors');
 
 async function deposit(req, res, next) {
   try {
-    const userId = req.params.id;
+    const userId = req.user.id;
     if (!(await usersService.getUser(userId))) {
       throw errorResponder(errorTypes.UNPROCESSABLE_ENTITY, 'User not found');
     }
     const { accountType, ammount } = req.body;
-    const accountId = await accountsService.getAccountId(
-      await accountsService.getAccountByUserId(userId, accountType)
+    const account = await accountsService.getAccountByUserId(
+      userId,
+      accountType
     );
-    const success = accountsService.setBalance(
+    if (!account) {
+      throw errorResponder(
+        errorTypes.UNPROCESSABLE_ENTITY,
+        'Account not found'
+      );
+    }
+    // eslint-disable-next-line no-underscore-dangle
+    const accountId = account._id;
+    if (!ammount || ammount < 0) {
+      throw errorResponder(
+        errorTypes.UNPROCESSABLE_ENTITY,
+        'Invalid amount value'
+      );
+    }
+    const success = await accountsService.setBalance(
       accountId,
       (await accountsService.getBalance(accountId)) + ammount
     );
@@ -30,14 +45,29 @@ async function deposit(req, res, next) {
 
 async function withdraw(req, res, next) {
   try {
-    const userId = req.params.id;
+    const userId = req.user.id;
     if (!(await usersService.getUser(userId))) {
       throw errorResponder(errorTypes.UNPROCESSABLE_ENTITY, 'User not found');
     }
     const { accountType, ammount } = req.body;
-    const accountId = await accountsService.getAccountId(
-      await accountsService.getAccountByUserId(userId, accountType)
+    const account = await accountsService.getAccountByUserId(
+      userId,
+      accountType
     );
+    if (!account) {
+      throw errorResponder(
+        errorTypes.UNPROCESSABLE_ENTITY,
+        'Account not found'
+      );
+    }
+    // eslint-disable-next-line no-underscore-dangle
+    const accountId = account._id;
+    if (!ammount || ammount < 0) {
+      throw errorResponder(
+        errorTypes.UNPROCESSABLE_ENTITY,
+        'Invalid amount value'
+      );
+    }
     const totalRemaining =
       (await accountsService.getBalance(accountId)) - ammount;
     if (totalRemaining < 0) {
@@ -46,7 +76,7 @@ async function withdraw(req, res, next) {
         'Withdrawal ammount exceeds balance'
       );
     }
-    const success = accountsService.setBalance(accountId, totalRemaining);
+    const success = await accountsService.setBalance(accountId, totalRemaining);
     if (!success) {
       throw errorResponder(
         errorTypes.UNPROCESSABLE_ENTITY,

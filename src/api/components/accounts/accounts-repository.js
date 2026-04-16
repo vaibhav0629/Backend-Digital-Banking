@@ -9,7 +9,7 @@ async function getAccount(id) {
 }
 
 async function getAccountByUserId(userId, accountType) {
-  return Accounts.findOne({ userId }, { accountType });
+  return Accounts.findOne({ userId, accountType });
 }
 
 async function getAccountId(id) {
