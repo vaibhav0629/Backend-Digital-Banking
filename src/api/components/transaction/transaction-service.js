@@ -43,6 +43,7 @@ async function transferBank(userId, toAccountNumber, amount, description) {
   return true;
 }
 
+<<<<<<< HEAD:src/api/components/transaction/transaction-service.js
 async function getTransactionHistory(userId) {
   const account = await transactionsRepository.getAccountByUserId(userId);
 
@@ -58,3 +59,8 @@ module.exports = {
   transferBank,
   getTransactionHistory
 };
+=======
+module.exports = {
+  transferBank,
+};
+>>>>>>> a62ebdcc54ea11e4819a0555b15569b82319cc87:src/api/components/transaction/transactions-service.js

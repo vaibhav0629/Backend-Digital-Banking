@@ -3,7 +3,8 @@ const { errorResponder, errorTypes } = require('../../../core/errors');
 
 async function transferBank(req, res, next) {
   try {
-    const userId = req.user.id;
+    // eslint-disable-next-line no-underscore-dangle
+    const userId = req.account._id;
 
     const { toAccountNumber, amount, description } = req.body;
 
