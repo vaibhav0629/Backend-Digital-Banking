@@ -16,12 +16,9 @@ async function createTransaction(data) {
   return Transactions.create(data);
 }
 
-async function getTransactionsByAccount(accountNumber) {
+async function getTransactionByAccount(accountNumber) {
   return Transactions.find({
-    $or: [
-      { senderAccount: accountNumber },
-      { recipientAccount: accountNumber },
-    ],
+    $or: [{ fromAccount: accountNumber }, { toAccount: accountNumber }],
   }).sort({ createdAt: -1 });
 }
 
@@ -34,6 +31,6 @@ module.exports = {
   getAccountByAccountNumber,
   updateBalance,
   createTransaction,
-  getTransactionsByAccount,
+  getTransactionByAccount,
   updateTransactionStatus,
 };

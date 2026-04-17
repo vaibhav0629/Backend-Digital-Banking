@@ -1,66 +1,110 @@
-const transactionsRepository = require('./transactions-repository');
+const transactionsRepository = require('./transaction-repository');
+const accountsService = require('../accounts/accounts-service');
+const { errorResponder, errorTypes } = require('../../../core/errors');
 
-async function transferBank(userId, toAccountNumber, amount, description) {
+async function transfer(userId, recipientAccountNumber, amount, description) {
+  if (!recipientAccountNumber) {
+    throw errorResponder(
+      errorTypes.VALIDATION,
+      'Recipient account number is required'
+    );
+  }
+
   if (!amount || amount <= 0) {
-    throw new Error('Amount must be greater than 0');
+    throw errorResponder(
+      errorTypes.VALIDATION,
+      'Amount must be greater than 0'
+    );
   }
 
-  const sender = await transactionsRepository.getAccountByUserId(userId);
-  if (!sender) throw new Error('Sender account not found');
-
-  const receiver = await transactionsRepository.getAccountByAccountNumber(toAccountNumber);
-  if (!receiver) throw new Error('Receiver account not found');
-
-  if (sender.accountNumber === receiver.accountNumber) {
-    throw new Error('Cannot transfer to your own account');
+  const senderAccount = await accountsService.getAccountByUserId(userId);
+  if (!senderAccount) {
+    throw errorResponder(errorTypes.NOT_FOUND, 'Sender account not found');
   }
 
-  if (sender.balance < amount) {
-    throw new Error('Insufficient balance');
+  const recipientAccount =
+    await transactionsRepository.getAccountByAccountNumber(
+      recipientAccountNumber
+    );
+
+  if (!recipientAccount) {
+    throw errorResponder(
+      errorTypes.NOT_FOUND,
+      "The recipient account doesn't exist"
+    );
   }
 
-  // Update balances
-  await transactionsRepository.updateBalance(
-    sender._id,
-    sender.balance - amount
-  );
+  if (senderAccount.accountNumber === recipientAccount.accountNumber) {
+    throw errorResponder(
+      errorTypes.BAD_REQUEST,
+      'You cannot transfer to your own account!'
+    );
+  }
 
-  await transactionsRepository.updateBalance(
-    receiver._id,
-    receiver.balance + amount
-  );
-
-  // Save transaction
-  await transactionsRepository.createTransaction({
-    fromAccount: sender.accountNumber,
-    toAccount: receiver.accountNumber,
+  const transaction = await transactionsRepository.createTransaction({
+    fromAccount: senderAccount.accountNumber,
+    toAccount: recipientAccount.accountNumber,
     type: 'transfer',
     amount,
     description,
-    status: 'success',
+    status: 'pending',
   });
 
-  return true;
+  try {
+    const senderBalance = await accountsService.getBalance(senderAccount.id);
+
+    if (senderBalance < amount) {
+      throw errorResponder(
+        errorTypes.UNPROCESSABLE_ENTITY,
+        'Insufficient balance'
+      );
+    }
+
+    await accountsService.setBalance(senderAccount.id, senderBalance - amount);
+
+    const recipientBalance = await accountsService.getBalance(
+      recipientAccount.id
+    );
+
+    await accountsService.setBalance(
+      recipientAccount.id,
+      recipientBalance + amount
+    );
+
+    await transactionsRepository.updateTransactionStatus(
+      transaction.id,
+      'success'
+    );
+
+    return true;
+  } catch (error) {
+    try {
+      await transactionsRepository.updateTransactionStatus(
+        transaction.id,
+        'failed'
+      );
+    } catch (e) {
+      console.error('Unable to update transaction status:', {
+        transactionId: transaction.id,
+        error: e.message,
+      });
+    }
+
+    throw error;
+  }
 }
 
-<<<<<<< HEAD:src/api/components/transaction/transaction-service.js
 async function getTransactionHistory(userId) {
-  const account = await transactionsRepository.getAccountByUserId(userId);
+  const account = await accountsService.getAccountByUserId(userId);
 
-  if (!account) throw new Error('Account not found');
-  throw errorResponder(errorTypes.UNPROCESSABLE_ENTITY, 'Account not found');
+  if (!account) {
+    throw errorResponder(errorTypes.NOT_FOUND, 'Account not found');
+  }
 
-  return transactionsRepository.getTransactionsByAccount(
-    account.accountNumber
-  );
+  return transactionsRepository.getTransactionByAccount(account.accountNumber);
 }
 
 module.exports = {
-  transferBank,
-  getTransactionHistory
+  transfer,
+  getTransactionHistory,
 };
-=======
-module.exports = {
-  transferBank,
-};
->>>>>>> a62ebdcc54ea11e4819a0555b15569b82319cc87:src/api/components/transaction/transactions-service.js

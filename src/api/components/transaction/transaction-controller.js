@@ -1,35 +1,34 @@
-const transactionsService = require('./transactions-service');
+const transactionsService = require('./transaction-service');
 const { errorResponder, errorTypes } = require('../../../core/errors');
 
-async function transferBank(req, res, next) {
+async function transfer(request, response, next) {
   try {
-    // eslint-disable-next-line no-underscore-dangle
-    const userId = req.account._id;
+    const sender = request.user.id;
 
-    const { toAccountNumber, amount, description } = req.body;
+    const { recipientAccountNumber, amount, description } = request.body;
 
-    if (!toAccountNumber) {
+    if (!recipientAccountNumber) {
       throw errorResponder(
-        errorTypes.VALIDATION_ERROR,
-        'Receiver account number is required'
+        errorTypes.VALIDATION,
+        'The recipient cannot be empty!'
       );
     }
 
     if (!amount || amount <= 0) {
       throw errorResponder(
-        errorTypes.VALIDATION_ERROR,
-        'Amount must be greater than 0'
+        errorTypes.VALIDATION,
+        'The amount must be greater than zero!'
       );
     }
 
-    await transactionsService.transferBank(
-      userId,
-      toAccountNumber,
+    await transactionsService.transfer(
+      sender,
+      recipientAccountNumber,
       amount,
       description
     );
 
-    return res.status(200).json({
+    return response.status(200).json({
       status: 'success',
       message: 'Transfer successful',
     });
@@ -38,14 +37,14 @@ async function transferBank(req, res, next) {
   }
 }
 
-async function getTransactionHistory(req, res, next) {
+async function getTransactionHistory(request, response, next) {
   try {
-    const userId = req.user.id;
+    const userId = request.user.id;
 
     const transactions =
       await transactionsService.getTransactionHistory(userId);
 
-    return res.status(200).json({
+    return response.status(200).json({
       status: 'success',
       message: 'Transaction history retrieved',
       data: transactions,
@@ -56,6 +55,6 @@ async function getTransactionHistory(req, res, next) {
 }
 
 module.exports = {
-  transferBank,
+  transfer,
   getTransactionHistory,
 };
