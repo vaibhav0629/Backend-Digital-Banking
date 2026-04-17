@@ -7,7 +7,6 @@ const auth = require('./components/auth/auth-route');
 module.exports = () => {
   const app = express.Router();
 
-  auth(app);
   users(app);
   accounts(app);
 

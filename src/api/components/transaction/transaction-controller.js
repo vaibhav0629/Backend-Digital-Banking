@@ -5,12 +5,7 @@ async function transferBank(req, res, next) {
   try {
     const userId = req.user.id;
 
-    const {
-      toAccountNumber,
-      amount,
-      description,
-      idempotencyKey, // ✅ NEW
-    } = req.body;
+    const { toAccountNumber, amount, description } = req.body;
 
     if (!toAccountNumber) {
       throw errorResponder(
@@ -30,12 +25,11 @@ async function transferBank(req, res, next) {
       userId,
       toAccountNumber,
       amount,
-      description,
-      idempotencyKey // ✅ pass it
+      description
     );
 
     return res.status(200).json({
-      success: true,
+      status: 'success',
       message: 'Transfer successful',
     });
   } catch (error) {
@@ -43,12 +37,21 @@ async function transferBank(req, res, next) {
   }
 }
 
-async function getTransactionHistory(userId) {
-  const account = await transactionsRepository.getAccountByUserId(userId);
+async function getTransactionHistory(req, res, next) {
+  try {
+    const userId = req.user.id;
 
-  if (!account) throw new Error('Account not found');
+    const transactions =
+      await transactionsService.getTransactionHistory(userId);
 
-  return transactionsRepository.getTransactionsByAccount(account.accountNumber);
+    return res.status(200).json({
+      status: 'success',
+      message: 'Transaction history retrieved',
+      data: transactions,
+    });
+  } catch (error) {
+    return next(error);
+  }
 }
 
 module.exports = {

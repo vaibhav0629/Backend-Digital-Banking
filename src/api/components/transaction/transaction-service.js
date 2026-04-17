@@ -1,32 +1,14 @@
 const transactionsRepository = require('./transactions-repository');
 
-async function transferBank(
-  userId,
-  toAccountNumber,
-  amount,
-  description,
-  idempotencyKey
-) {
+async function transferBank(userId, toAccountNumber, amount, description) {
   if (!amount || amount <= 0) {
     throw new Error('Amount must be greater than 0');
-  }
-
-  // ✅ Prevent duplicate transactions
-  if (idempotencyKey) {
-    const existing =
-      await transactionsRepository.getTransactionByIdempotencyKey(
-        idempotencyKey
-      );
-    if (existing) {
-      throw new Error('Duplicate transaction detected');
-    }
   }
 
   const sender = await transactionsRepository.getAccountByUserId(userId);
   if (!sender) throw new Error('Sender account not found');
 
-  const receiver =
-    await transactionsRepository.getAccountByAccountNumber(toAccountNumber);
+  const receiver = await transactionsRepository.getAccountByAccountNumber(toAccountNumber);
   if (!receiver) throw new Error('Receiver account not found');
 
   if (sender.accountNumber === receiver.accountNumber) {
@@ -48,7 +30,7 @@ async function transferBank(
     receiver.balance + amount
   );
 
-  // Save transaction (ONE record - enough for your assignment)
+  // Save transaction
   await transactionsRepository.createTransaction({
     fromAccount: sender.accountNumber,
     toAccount: receiver.accountNumber,
@@ -56,8 +38,23 @@ async function transferBank(
     amount,
     description,
     status: 'success',
-    idempotencyKey,
   });
 
   return true;
 }
+
+async function getTransactionHistory(userId) {
+  const account = await transactionsRepository.getAccountByUserId(userId);
+
+  if (!account) throw new Error('Account not found');
+  throw errorResponder(errorTypes.UNPROCESSABLE_ENTITY, 'Account not found');
+
+  return transactionsRepository.getTransactionsByAccount(
+    account.accountNumber
+  );
+}
+
+module.exports = {
+  transferBank,
+  getTransactionHistory
+};
