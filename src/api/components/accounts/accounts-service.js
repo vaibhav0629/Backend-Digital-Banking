@@ -1,5 +1,6 @@
 const accountsRepository = require('./accounts-repository');
-const { hashPassword, passwordMatched } = require('../../../utils/password');
+const { hashPassword, comparePassword } = require('../../utils/password');
+const { errorResponder, errorTypes } = require('../../core/error');
 
 function generateRandomAccountNumber(length = 10) {
   let result = '';
@@ -35,36 +36,92 @@ async function getAccounts() {
 }
 
 async function getAccount(id) {
-  return accountsRepository.getAccount(id);
+  const account = await accountsRepository.getAccount(id);
+
+  if (!account) {
+    throw errorResponder(errorTypes.NOT_FOUND, 'Account not found');
+  }
+
+  return account;
 }
 
-async function getAccountByUserId(userId, accountType) {
-  return accountsRepository.getAccountByUserId(userId, accountType);
-}
+async function getAccountByUserId(userId) {
+  if (!userId) {
+    throw errorResponder(errorTypes.BAD_REQUEST, 'userId is required');
+  }
 
-async function getAccountId(id) {
-  return accountsRepository.getAccountId(id);
+  const accounts = await accountsRepository.getAccountByUserId(userId);
+
+  if (!accounts || accounts.length === 0) {
+    throw errorResponder(errorTypes.NOT_FOUND, 'Account not found');
+  }
+
+  return accounts;
 }
 
 async function getBalance(id) {
-  return accountsRepository.getBalance(id);
+  if (!id) {
+    throw errorResponder(errorTypes.BAD_REQUEST, 'Account id is required');
+  }
+
+  const account = await accountsRepository.getAccount(id);
+
+  if (!account) {
+    throw errorResponder(errorTypes.NOT_FOUND, 'Account not found');
+  }
+
+  return account.balance;
 }
 
 async function setBalance(id, balance) {
+  if (!id) {
+    throw errorResponder(errorTypes.BAD_REQUEST, 'Account id is required');
+  }
+
+  if (balance === undefined || balance === null) {
+    throw errorResponder(errorTypes.BAD_REQUEST, 'Balance is required');
+  }
+
+  if (typeof balance !== 'number') {
+    throw errorResponder(errorTypes.BAD_REQUEST, 'Balance must be a number');
+  }
+
   if (balance < 0) {
-    throw new Error('Balance cannot be negative');
+    throw errorResponder(
+      errorTypes.BAD_REQUEST,
+      'Balance cannot be negative'
+    );
+  }
+
+  const account = await accountsRepository.getAccount(id);
+
+  if (!account) {
+    throw errorResponder(errorTypes.NOT_FOUND, 'Account not found');
   }
 
   return accountsRepository.setBalance(id, balance);
 }
 
 async function setPin(id, pin) {
+  if (!id) {
+    throw errorResponder(errorTypes.BAD_REQUEST, 'Account id is required');
+  }
+
   if (!pin) {
-    throw new Error('PIN is required');
+    throw errorResponder(errorTypes.BAD_REQUEST, 'PIN is required');
   }
 
   if (!/^\d{6}$/.test(pin)) {
-    throw new Error('PIN must be exactly 6 digits');
+    throw errorResponder(
+      errorTypes.BAD_REQUEST,
+      'PIN must be exactly 6 digits'
+    );
+  }
+
+  const account = await accountsRepository.getAccount(id);
+
+  if (!account) {
+    throw errorResponder(errorTypes.NOT_FOUND, 'Account not found');
   }
 
   const hashedPin = await hashPassword(pin);
@@ -72,24 +129,40 @@ async function setPin(id, pin) {
 }
 
 async function verifyPin(id, pin) {
+  if (!id) {
+    throw errorResponder(errorTypes.BAD_REQUEST, 'Account id is required');
+  }
+
   if (!pin) {
-    throw new Error('PIN is required');
+    throw errorResponder(errorTypes.BAD_REQUEST, 'PIN is required');
+  }
+
+  const account = await accountsRepository.getAccount(id);
+
+  if (!account) {
+    throw errorResponder(errorTypes.NOT_FOUND, 'Account not found');
   }
 
   const hashedPin = await accountsRepository.getPin(id);
 
   if (!hashedPin) {
-    throw new Error('PIN has not been set for this account');
+    throw errorResponder(
+      errorTypes.BAD_REQUEST,
+      'PIN has not been set for this account'
+    );
   }
 
-  return passwordMatched(pin, hashedPin);
+  return comparePassword(pin, hashedPin);
 }
 
 async function authorizeTransaction(id, pin) {
   const isValidPin = await verifyPin(id, pin);
 
   if (!isValidPin) {
-    throw new Error('Invalid transaction PIN');
+    throw errorResponder(
+      errorTypes.FORBIDDEN,
+      'Invalid transaction PIN'
+    );
   }
 
   return true;
@@ -107,23 +180,40 @@ async function createAccount(payload) {
   } = payload;
 
   if (!userId) {
-    throw new Error('userId is required');
+    throw errorResponder(errorTypes.BAD_REQUEST, 'userId is required');
   }
 
   if (!pin) {
-    throw new Error('PIN is required');
+    throw errorResponder(errorTypes.BAD_REQUEST, 'PIN is required');
   }
 
   if (!confirmPin) {
-    throw new Error('confirmPin is required');
+    throw errorResponder(errorTypes.BAD_REQUEST, 'confirmPin is required');
   }
 
   if (!/^\d{6}$/.test(pin)) {
-    throw new Error('PIN must be exactly 6 digits');
+    throw errorResponder(
+      errorTypes.BAD_REQUEST,
+      'PIN must be exactly 6 digits'
+    );
   }
 
   if (pin !== confirmPin) {
-    throw new Error('PIN confirmation does not match');
+    throw errorResponder(
+      errorTypes.BAD_REQUEST,
+      'PIN confirmation does not match'
+    );
+  }
+
+  if (typeof balance !== 'number') {
+    throw errorResponder(errorTypes.BAD_REQUEST, 'Balance must be a number');
+  }
+
+  if (balance < 0) {
+    throw errorResponder(
+      errorTypes.BAD_REQUEST,
+      'Balance cannot be negative'
+    );
   }
 
   let finalAccountNumber = accountNumber;
@@ -135,7 +225,10 @@ async function createAccount(payload) {
       await accountsRepository.getAccountByAccountNumber(finalAccountNumber);
 
     if (existingNumberAccount) {
-      throw new Error('Account number already exists');
+      throw errorResponder(
+        errorTypes.DB_DUPLICATE_CONFLICT,
+        'Account number already exists'
+      );
     }
   }
 
@@ -152,34 +245,56 @@ async function createAccount(payload) {
 }
 
 async function updatePin(id, oldPin, newPin, confirmNewPin) {
+  if (!id) {
+    throw errorResponder(errorTypes.BAD_REQUEST, 'Account id is required');
+  }
+
   if (!oldPin) {
-    throw new Error('oldPin is required');
+    throw errorResponder(errorTypes.BAD_REQUEST, 'oldPin is required');
   }
 
   if (!newPin) {
-    throw new Error('newPin is required');
+    throw errorResponder(errorTypes.BAD_REQUEST, 'newPin is required');
   }
 
   if (!confirmNewPin) {
-    throw new Error('confirmNewPin is required');
+    throw errorResponder(errorTypes.BAD_REQUEST, 'confirmNewPin is required');
   }
 
   if (!/^\d{6}$/.test(newPin)) {
-    throw new Error('New PIN must be exactly 6 digits');
+    throw errorResponder(
+      errorTypes.BAD_REQUEST,
+      'New PIN must be exactly 6 digits'
+    );
   }
 
   if (newPin !== confirmNewPin) {
-    throw new Error('New PIN confirmation does not match');
+    throw errorResponder(
+      errorTypes.BAD_REQUEST,
+      'New PIN confirmation does not match'
+    );
+  }
+
+  const account = await accountsRepository.getAccount(id);
+
+  if (!account) {
+    throw errorResponder(errorTypes.NOT_FOUND, 'Account not found');
   }
 
   const isOldPinValid = await verifyPin(id, oldPin);
 
   if (!isOldPinValid) {
-    throw new Error('Old PIN is incorrect');
+    throw errorResponder(
+      errorTypes.FORBIDDEN,
+      'Old PIN is incorrect'
+    );
   }
 
   if (oldPin === newPin) {
-    throw new Error('New PIN must be different from old PIN');
+    throw errorResponder(
+      errorTypes.BAD_REQUEST,
+      'New PIN must be different from old PIN'
+    );
   }
 
   const hashedNewPin = await hashPassword(newPin);
@@ -188,12 +303,11 @@ async function updatePin(id, oldPin, newPin, confirmNewPin) {
 
 async function deleteAccountsByUserId(userId) {
   if (!userId) {
-    throw new Error('userId is required');
+    throw errorResponder(errorTypes.BAD_REQUEST, 'userId is required');
   }
 
   return accountsRepository.deleteAccountsByUserId(userId);
 }
-
 
 module.exports = {
   getAccounts,
@@ -206,6 +320,5 @@ module.exports = {
   authorizeTransaction,
   createAccount,
   updatePin,
-  getAccountId,
   deleteAccountsByUserId,
 };

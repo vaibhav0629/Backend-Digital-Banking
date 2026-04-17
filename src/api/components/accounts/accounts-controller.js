@@ -33,13 +33,6 @@ async function getAccount(req, res, next) {
     const { id } = req.params;
     const account = await accountsService.getAccount(id);
 
-    if (!account) {
-      return res.status(404).json({
-        status: 'fail',
-        message: 'Account not found',
-      });
-    }
-
     return res.status(200).json({
       status: 'success',
       message: 'Account retrieved successfully',
@@ -54,13 +47,6 @@ async function getAccountByUserId(req, res, next) {
   try {
     const { userId } = req.params;
     const accounts = await accountsService.getAccountByUserId(userId);
-
-    if (!accounts || accounts.length === 0) {
-      return res.status(404).json({
-        status: 'fail',
-        message: 'Account not found',
-      });
-    }
 
     return res.status(200).json({
       status: 'success',
@@ -145,6 +131,22 @@ async function updatePin(req, res, next) {
   }
 }
 
+async function deleteAccountsByUserId(req, res, next) {
+  try {
+    const { userId } = req.params;
+
+    const result = await accountsService.deleteAccountsByUserId(userId);
+
+    return res.status(200).json({
+      status: 'success',
+      message: 'Accounts deleted successfully',
+      data: result,
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
+
 module.exports = {
   getAccounts,
   createAccount,
@@ -154,4 +156,5 @@ module.exports = {
   setBalance,
   setPin,
   updatePin,
+  deleteAccountsByUserId,
 };
