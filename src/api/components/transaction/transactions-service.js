@@ -61,3 +61,7 @@ async function transferBank(
 
   return true;
 }
+
+module.exports = {
+  transferBank,
+};
