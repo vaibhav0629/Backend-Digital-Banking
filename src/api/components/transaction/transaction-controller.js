@@ -3,7 +3,7 @@ const { errorResponder, errorTypes } = require('../../../core/errors');
 
 async function transfer(request, response, next) {
   try {
-    const sender = request.user.id;
+    const senderAccount = request.user;
 
     const { recipientAccountNumber, amount, description } = request.body;
 
@@ -22,7 +22,7 @@ async function transfer(request, response, next) {
     }
 
     await transactionsService.transfer(
-      sender,
+      senderAccount,
       recipientAccountNumber,
       amount,
       description
@@ -39,10 +39,11 @@ async function transfer(request, response, next) {
 
 async function getTransactionHistory(request, response, next) {
   try {
-    const userId = request.user.id;
+    // eslint-disable-next-line no-underscore-dangle
+    const account = request.user;
 
     const transactions =
-      await transactionsService.getTransactionHistory(userId);
+      await transactionsService.getTransactionHistory(account);
 
     return response.status(200).json({
       status: 'success',

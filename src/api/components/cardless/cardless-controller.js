@@ -4,15 +4,8 @@ const { errorResponder, errorTypes } = require('../../../core/errors');
 
 async function deposit(req, res, next) {
   try {
-    const userId = req.user.id;
-    if (!(await usersService.getUser(userId))) {
-      throw errorResponder(errorTypes.UNPROCESSABLE_ENTITY, 'User not found');
-    }
-    const { accountType, ammount } = req.body;
-    const account = await accountsService.getAccountByUserId(
-      userId,
-      accountType
-    );
+    const { ammount } = req.body;
+    const account = req.user;
     if (!account) {
       throw errorResponder(
         errorTypes.UNPROCESSABLE_ENTITY,
@@ -45,15 +38,9 @@ async function deposit(req, res, next) {
 
 async function withdraw(req, res, next) {
   try {
-    const userId = req.user.id;
-    if (!(await usersService.getUser(userId))) {
-      throw errorResponder(errorTypes.UNPROCESSABLE_ENTITY, 'User not found');
-    }
-    const { accountType, ammount } = req.body;
-    const account = await accountsService.getAccountByUserId(
-      userId,
-      accountType
-    );
+    const { ammount } = req.body;
+    const account = req.user;
+
     if (!account) {
       throw errorResponder(
         errorTypes.UNPROCESSABLE_ENTITY,
