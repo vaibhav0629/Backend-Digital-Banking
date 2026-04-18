@@ -8,13 +8,13 @@ module.exports = (db) =>
           ref: 'Accounts',
           required: true,
         },
-        recipientAccountNumver: {
+        recipientAccountNumber: {
           type: String,
           required: true,
         },
         recipientName: {
           type: String,
-          require: true,
+          required: true,
         },
         bankName: {
           type: String,

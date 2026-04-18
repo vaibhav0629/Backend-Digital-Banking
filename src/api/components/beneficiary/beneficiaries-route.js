@@ -8,4 +8,5 @@ module.exports = (app) => {
   app.use('/beneficiaries', route);
 
   route.get('/', UserAuth, controller.getBeneficiaries);
+  route.post('/', UserAuth, controller.createBeneficiaries);
 };
