@@ -10,7 +10,8 @@ function generateToken(email) {
     timestamp: Date.now(),
   };
 
-  return JWT.sign(payload, secretKey, { expiresIn: '15m' });
+  return JWT.sign(payload, secretKey//, { expiresIn: '15m' 
+  );
 }
 
 async function checkLogin(email, password) {
