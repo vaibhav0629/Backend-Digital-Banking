@@ -8,7 +8,10 @@ async function getBeneficiaries(req, res, next) {
 
     const account = await accountsService.getAccountByUserId(userId, 'savings');
     if (!account) {
-      throw errorResponder(errorTypes.UNPROCESSABLE_ENTITY, 'Account not found');
+      throw errorResponder(
+        errorTypes.UNPROCESSABLE_ENTITY,
+        'Account not found'
+      );
     }
 
     const accountId = await accountsService.getAccountId(account);

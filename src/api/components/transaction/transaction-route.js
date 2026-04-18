@@ -1,22 +1,20 @@
 const express = require('express');
-
-const cardlessController = require('./cardless-controller');
-
+const transactionsController = require('./transaction-controller');
 const authMiddleware = require('../../middleware/auth-middleware');
 
 const route = express.Router();
 
 module.exports = (app) => {
-  app.use('/cardless', route);
+  app.use('/transactions', route);
 
   route.post(
-    '/deposit/',
+    '/transfer',
     authMiddleware.TransactAuth,
-    cardlessController.deposit
+    transactionsController.transfer
   );
-  route.post(
-    '/withdraw/',
+  route.get(
+    '/history',
     authMiddleware.TransactAuth,
-    cardlessController.withdraw
+    transactionsController.getTransactionHistory
   );
 };
