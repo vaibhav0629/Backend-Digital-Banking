@@ -8,7 +8,6 @@ const cardless = require('./components/cardless/cardless-route');
 module.exports = () => {
   const app = express.Router();
 
-  auth(app);
   users(app);
   accounts(app);
   cardless(app);

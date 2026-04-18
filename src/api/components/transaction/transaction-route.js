@@ -1,5 +1,5 @@
 const express = require('express');
-const transactionsController = require('./transactions-controller');
+const transactionsController = require('./transaction-controller');
 const authMiddleware = require('../../middleware/auth-middleware');
 
 const route = express.Router();
@@ -10,7 +10,7 @@ module.exports = (app) => {
   route.post(
     '/transfer',
     authMiddleware.TransactAuth,
-    transactionsController.transferBank
+    transactionsController.transfer
   );
   route.get(
     '/history',
