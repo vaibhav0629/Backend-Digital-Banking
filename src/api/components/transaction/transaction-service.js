@@ -2,7 +2,7 @@ const transactionsRepository = require('./transaction-repository');
 const accountsService = require('../accounts/accounts-service');
 const { errorResponder, errorTypes } = require('../../../core/errors');
 
-async function transfer(userId, recipientAccountNumber, amount, description) {
+async function transfer(sender, recipientAccountNumber, amount, description) {
   if (!recipientAccountNumber) {
     throw errorResponder(
       errorTypes.VALIDATION,
@@ -17,7 +17,7 @@ async function transfer(userId, recipientAccountNumber, amount, description) {
     );
   }
 
-  const senderAccount = await accountsService.getAccountByUserId(userId);
+  const senderAccount = sender;
   if (!senderAccount) {
     throw errorResponder(errorTypes.NOT_FOUND, 'Sender account not found');
   }
@@ -94,9 +94,7 @@ async function transfer(userId, recipientAccountNumber, amount, description) {
   }
 }
 
-async function getTransactionHistory(userId) {
-  const account = await accountsService.getAccountByUserId(userId);
-
+async function getTransactionHistory(account) {
   if (!account) {
     throw errorResponder(errorTypes.NOT_FOUND, 'Account not found');
   }

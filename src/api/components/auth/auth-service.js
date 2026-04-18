@@ -1,5 +1,5 @@
-const UserService = require('../users/users-service');
 const JWT = require('jsonwebtoken');
+const UserService = require('../users/users-service');
 const { passwordMatched } = require('../../../utils/password');
 const accountService = require('../accounts/accounts-service');
 
@@ -31,7 +31,7 @@ async function checkLogin(email, password) {
 }
 
 async function doTransaction(accountID, pin) {
-  const auth = accountService.authorizeTransaction(accountID, pin);
+  const auth = await accountService.authorizeTransaction(accountID, pin);
   if (auth) {
     return {
       token: generateToken(accountID),

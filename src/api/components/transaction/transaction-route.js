@@ -14,7 +14,7 @@ module.exports = (app) => {
   );
   route.get(
     '/history',
-    authMiddleware.UserAuth,
+    authMiddleware.TransactAuth,
     transactionsController.getTransactionHistory
   );
 };

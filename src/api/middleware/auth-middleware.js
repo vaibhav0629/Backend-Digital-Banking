@@ -42,17 +42,23 @@ passport.use(
 
 passport.use(
   'transaction',
-  new passportJWT.Strategy({
-    jwtFromRequest: passportJWT.ExtractJwt.fromAuthHeaderWithScheme('jwt'),
-    secretOrKey: process.env.SECRET_KEY,
-  }),
-  async (payload, done) => {
-    const account = await getAccount(payload.email);
-    if (account) {
-      return done(null, account);
+  new passportJWT.Strategy(
+    {
+      jwtFromRequest: passportJWT.ExtractJwt.fromAuthHeaderWithScheme('jwt'),
+      secretOrKey: process.env.SECRET_KEY,
+    },
+    async (payload, done) => {
+      try {
+        const account = await getAccount(payload.email);
+        if (account) {
+          return done(null, account);
+        }
+      } catch (error) {
+        return done(null, false);
+      }
+      return done(null, false);
     }
-    return done(null, false);
-  }
+  )
 );
 
 module.exports = {

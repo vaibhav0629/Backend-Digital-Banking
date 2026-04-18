@@ -24,7 +24,7 @@ module.exports = (db) =>
         },
         status: {
           type: String,
-          enum: ['success', 'failed'],
+          enum: ['success', 'failed', 'pending'],
           default: 'success',
         },
       },
