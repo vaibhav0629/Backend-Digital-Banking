@@ -1,6 +1,6 @@
 const accountsService = require('../accounts/accounts-service');
-const usersService = require('../users/users-service');
 const { errorResponder, errorTypes } = require('../../../core/errors');
+const transactionsRepository = require('../transaction/transaction-repository');
 
 async function deposit(req, res, next) {
   try {
@@ -30,6 +30,20 @@ async function deposit(req, res, next) {
         'Failed to Deposit'
       );
     }
+    const transaction = await transactionsRepository.createTransaction({
+      fromAccount: accountId,
+      toAccount: 'none',
+      type: 'deposit',
+      ammount,
+      description: 'Storing money',
+      status: 'success',
+    });
+    if (!transaction) {
+      throw errorResponder(
+        errorTypes.UNPROCESSABLE_ENTITY,
+        'Failed to save deposit history'
+      );
+    }
     return res.status(200).json({ message: 'Successful deposit!' });
   } catch (error) {
     return next(error);
@@ -55,8 +69,7 @@ async function withdraw(req, res, next) {
         'Invalid amount value'
       );
     }
-    const totalRemaining =
-      (await accountsService.getBalance(accountId)) - ammount;
+    const totalRemaining = account.balance - ammount;
     if (totalRemaining < 0) {
       throw errorResponder(
         errorTypes.UNPROCESSABLE_ENTITY,
@@ -68,6 +81,20 @@ async function withdraw(req, res, next) {
       throw errorResponder(
         errorTypes.UNPROCESSABLE_ENTITY,
         'Failed to withdraw'
+      );
+    }
+    const transaction = await transactionsRepository.createTransaction({
+      fromAccount: accountId,
+      toAccount: 'none',
+      type: 'withdraw',
+      ammount,
+      description: 'Taking money',
+      status: 'success',
+    });
+    if (!transaction) {
+      throw errorResponder(
+        errorTypes.UNPROCESSABLE_ENTITY,
+        'Failed to save withdraw history'
       );
     }
     return res.status(200).json({ message: 'Successful withdrawal!' });
