@@ -23,9 +23,9 @@ async function generateUniqueAccountNumber() {
   do {
     accountNumber = generateRandomAccountNumber();
     // eslint-disable-next-line no-await-in-loop
-    existingAccount = await accountsRepository.getAccountByAccountNumber(
-      accountNumber
-    );
+    existingAccount =
+      // eslint-disable-next-line no-await-in-loop
+      await accountsRepository.getAccountByAccountNumber(accountNumber);
   } while (existingAccount);
 
   return accountNumber;
