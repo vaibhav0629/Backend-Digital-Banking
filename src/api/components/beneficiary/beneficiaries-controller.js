@@ -18,9 +18,8 @@ async function getBeneficiaries(req, res, next) {
       );
     }
 
-    const accountId = await accountsService.getAccountId(account);
-
-    const data = await beneficiariesService.getBeneficiaries(accountId);
+    // eslint-disable-next-line no-underscore-dangle
+    const data = await beneficiariesService.getBeneficiaries(account._id);
 
     return res.status(200).json({
       message: 'List of Beneficiary',
