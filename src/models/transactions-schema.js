@@ -5,9 +5,11 @@ module.exports = (db) =>
       {
         fromAccount: {
           type: String,
+          default: null,
         },
         toAccount: {
           type: String,
+          default: null,
         },
         type: {
           type: String,
@@ -24,8 +26,12 @@ module.exports = (db) =>
         },
         status: {
           type: String,
-          enum: ['success', 'failed', 'pending'],
-          default: 'success',
+          enum: ['pending', 'success', 'failed'],
+          default: 'pending',
+        },
+        processedAt: {
+          type: Date,
+          default: null,
         },
       },
       { timestamps: true }

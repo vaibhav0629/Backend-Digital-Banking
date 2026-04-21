@@ -5,5 +5,10 @@ module.exports = (db) =>
       email: String,
       password: String,
       fullName: String,
+      role: {
+        type: String,
+        default: 'user',
+        enum: ['user', 'admin'],
+      },
     })
   );

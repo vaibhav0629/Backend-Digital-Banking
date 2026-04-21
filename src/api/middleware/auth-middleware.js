@@ -32,7 +32,7 @@ passport.use(
     },
     async (payload, done) => {
       const user = await getUserByEmail(payload.email);
-      if (user && payload.role === 'admin') {
+      if (user && user.role === 'admin') {
         return done(null, user);
       }
       return done(null, false);

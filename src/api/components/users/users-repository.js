@@ -12,8 +12,8 @@ async function getUserByEmail(email) {
   return Users.findOne({ email });
 }
 
-async function createUser(email, password, fullName) {
-  return Users.create({ email, password, fullName });
+async function createUser(email, password, fullName, role) {
+  return Users.create({ email, password, fullName, role });
 }
 
 async function updateUser(id, email, fullName) {

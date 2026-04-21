@@ -2,9 +2,9 @@ const express = require('express');
 
 const users = require('./components/users/users-route');
 const accounts = require('./components/accounts/accounts-route');
-const auth = require('./components/auth/auth-route');
-const cardless = require('./components/cardless/cardless-route');
 const transaction = require('./components/transaction/transaction-route');
+const auth = require('./components/auth/auth-route');
+const admin = require('./components/admin/admin-route');
 const beneficiaries = require('./components/beneficiary/beneficiaries-route');
 
 module.exports = () => {
@@ -12,10 +12,10 @@ module.exports = () => {
 
   auth(app);
   users(app);
+  admin(app);
   accounts(app);
-  cardless(app);
-  transaction(app);
   beneficiaries(app);
+  transaction(app);
 
   return app;
 };
