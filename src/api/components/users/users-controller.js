@@ -34,6 +34,7 @@ async function createUser(request, response, next) {
       password,
       full_name: fullName,
       confirm_password: confirmPassword,
+      role,
     } = request.body;
 
     // Email is required and cannot be empty
@@ -80,7 +81,8 @@ async function createUser(request, response, next) {
     const success = await usersService.createUser(
       email,
       hashedPassword,
-      fullName
+      fullName,
+      role
     );
 
     if (!success) {
