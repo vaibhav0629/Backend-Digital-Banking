@@ -34,7 +34,7 @@ async function deposit(req, res, next) {
       fromAccount: accountId,
       toAccount: 'none',
       type: 'deposit',
-      ammount,
+      amount: ammount,
       description: 'Storing money',
       status: 'success',
     });
@@ -87,7 +87,7 @@ async function withdraw(req, res, next) {
       fromAccount: accountId,
       toAccount: 'none',
       type: 'withdraw',
-      ammount,
+      amount: ammount,
       description: 'Taking money',
       status: 'success',
     });

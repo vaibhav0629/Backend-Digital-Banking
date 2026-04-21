@@ -1,5 +1,5 @@
 const accountsRepository = require('./accounts-repository');
-const { hashPassword, comparePassword } = require('../../../utils/password');
+const { hashPassword, passwordMatched } = require('../../../utils/password');
 const { errorResponder, errorTypes } = require('../../../core/errors');
 
 function generateRandomAccountNumber(length = 10) {
@@ -45,12 +45,15 @@ async function getAccount(id) {
   return account;
 }
 
-async function getAccountByUserId(userId) {
+async function getAccountByUserId(userId, accountType) {
   if (!userId) {
     throw errorResponder(errorTypes.BAD_REQUEST, 'userId is required');
   }
 
-  const accounts = await accountsRepository.getAccountByUserId(userId);
+  const accounts = await accountsRepository.getAccountByUserId(
+    userId,
+    accountType
+  );
 
   if (!accounts || accounts.length === 0) {
     throw errorResponder(errorTypes.NOT_FOUND, 'Account not found');
@@ -87,10 +90,7 @@ async function setBalance(id, balance) {
   }
 
   if (balance < 0) {
-    throw errorResponder(
-      errorTypes.BAD_REQUEST,
-      'Balance cannot be negative'
-    );
+    throw errorResponder(errorTypes.BAD_REQUEST, 'Balance cannot be negative');
   }
 
   const account = await accountsRepository.getAccount(id);
@@ -152,17 +152,14 @@ async function verifyPin(id, pin) {
     );
   }
 
-  return comparePassword(pin, hashedPin);
+  return passwordMatched(pin, hashedPin);
 }
 
 async function authorizeTransaction(id, pin) {
   const isValidPin = await verifyPin(id, pin);
 
   if (!isValidPin) {
-    throw errorResponder(
-      errorTypes.FORBIDDEN,
-      'Invalid transaction PIN'
-    );
+    throw errorResponder(errorTypes.FORBIDDEN, 'Invalid transaction PIN');
   }
 
   return true;
@@ -210,10 +207,7 @@ async function createAccount(payload) {
   }
 
   if (balance < 0) {
-    throw errorResponder(
-      errorTypes.BAD_REQUEST,
-      'Balance cannot be negative'
-    );
+    throw errorResponder(errorTypes.BAD_REQUEST, 'Balance cannot be negative');
   }
 
   let finalAccountNumber = accountNumber;
@@ -284,10 +278,7 @@ async function updatePin(id, oldPin, newPin, confirmNewPin) {
   const isOldPinValid = await verifyPin(id, oldPin);
 
   if (!isOldPinValid) {
-    throw errorResponder(
-      errorTypes.FORBIDDEN,
-      'Old PIN is incorrect'
-    );
+    throw errorResponder(errorTypes.FORBIDDEN, 'Old PIN is incorrect');
   }
 
   if (oldPin === newPin) {
