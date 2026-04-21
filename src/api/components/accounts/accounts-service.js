@@ -1,6 +1,6 @@
 const accountsRepository = require('./accounts-repository');
-const { hashPassword, comparePassword } = require('../../utils/password');
-const { errorResponder, errorTypes } = require('../../core/error');
+const { hashPassword, comparePassword } = require('../../../utils/password');
+const { errorResponder, errorTypes } = require('../../../core/errors');
 
 function generateRandomAccountNumber(length = 10) {
   let result = '';
