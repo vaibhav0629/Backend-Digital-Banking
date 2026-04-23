@@ -192,8 +192,7 @@ Body:
 
 Header:
 
-![Header image](<img width="586" height="76" alt="Screen Shot 2026-04-23 at 12 31 07" src="https://github.com/user-attachments/assets/d8d52a51-1012-4b48-9f67-a2d36bcd4465" />
-)
+![Header image](https://github.com/user-attachments/assets/d8d52a51-1012-4b48-9f67-a2d36bcd4465)
 
 Result:
 
@@ -211,8 +210,7 @@ Additional Notes:
 - Token `Authorization` didapatkan melalui /api/auth/transaction.
 
 Example Result:
-![Example of Deposit](<img width="1366" height="768" alt="Screen Shot 2026-04-23 at 15 31 07" src="https://github.com/user-attachments/assets/5975b333-ccfd-4f54-8d92-4d9b35738d35" />
-)
+![Example of Deposit](https://github.com/user-attachments/assets/5975b333-ccfd-4f54-8d92-4d9b35738d35)
 
 2. POST `localhost:<portNum>/api/cardless/withdraw`. Mengurangi saldo dari rekening pilihan pengguna melalui withdraw dan mencatatnya dalam transaction history.
 
@@ -226,8 +224,7 @@ Body:
 
 Header:
 
-![Header image](<img width="586" height="76" alt="Screen Shot 2026-04-23 at 12 31 07" src="https://github.com/user-attachments/assets/0eeb28f0-913c-401b-86e2-a56d7ae4a839" />
-)
+![Header image](https://github.com/user-attachments/assets/0eeb28f0-913c-401b-86e2-a56d7ae4a839)
 
 Result:
 
@@ -245,5 +242,4 @@ Additional Notes:
 - Token `Authorization` didapatkan melalui /api/auth/transaction.
 
 Example Result:
-![Example of Withdraw](<img width="1366" height="768" alt="Screen Shot 2026-04-23 at 15 31 28" src="https://github.com/user-attachments/assets/dbdd9717-a052-4309-969f-3cd695c35fe0" />
-)
+![Example of Withdraw](https://github.com/user-attachments/assets/dbdd9717-a052-4309-969f-3cd695c35fe0)
