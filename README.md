@@ -198,9 +198,8 @@ Result:
 
 ```json
 {
-		"message": "Successful deposit"
+  "message": "Successful deposit"
 }
-
 ```
 
 Additional Notes:
@@ -230,9 +229,8 @@ Result:
 
 ```json
 {
-		"message": "Successful withdrawal"
+  "message": "Successful withdrawal"
 }
-
 ```
 
 Additional Notes:
@@ -243,3 +241,60 @@ Additional Notes:
 
 Example Result:
 ![Example of User Login]()
+
+### Transaction Components
+
+1. POST /api/transactions/transfer. Melakukan transfer dengan cara menginput nomor rekening tujuan, nominalnya dan deskripsinya (opsional)
+
+Body:
+
+```json
+{
+  "recipientAccountNumber": "existingAccountNumber",
+  "amount": yourAmount,
+  "description": "yourDescription"
+}
+
+Result:
+{
+  "status": "success",
+  "message": "Transfer successful"
+}
+
+```
+
+Additional Notes:
+
+- To access this endpoint, you must first register to have a user.
+- To use this token, on header use `Authentication` with the value `JWT yourLoginToken`
+
+2. GET /api/transactions/history. Melihat daftar transaksi yang telah dilakukan sejauh ini.
+
+Result:
+
+```json
+{
+  "status": "success",
+  "message": "Transaction history retrieved",
+  "data": [
+    {
+      "_id": "yourId",
+      "fromAccount": "senderAccountNumber",
+      "toAccount": "recipientAccountNumber",
+      "type": "transfer",
+      "amount": yourAmount,
+      "description": "yourDescription",
+      "status": "success",
+      "processedAt": null,
+      "createdAt": "transactionTimeStamp",
+      "updatedAt": "transactionTimeStamp",
+      "__v": 0
+    }
+  ]
+}
+```
+
+Additional Notes:
+
+- To access this endpoint, you must first register to have a user.
+- To use this token, on header use `Authentication` with the value `JWT yourLoginToken`
