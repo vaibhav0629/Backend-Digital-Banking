@@ -49,22 +49,22 @@ async function createBeneficiaries(req, res, next) {
       );
     }
 
-    const account = await accountsService.getAccountByUserId(
+    const accountResult = await accountsService.getAccountByUserId(
       userId,
       accountType
     );
 
-    if (!account) {
+    const account = accountResult?.data || accountResult[0] || accountResult;
+
+    if (!account || !account._id) {
       throw errorResponder(
         errorTypes.UNPROCESSABLE_ENTITY,
         'Account not found'
       );
     }
 
-    const accountId = await accountsService.getAccountId(account);
-
     const newBeneficiary = await beneficiariesService.createBeneficiary({
-      ownerAccountId: accountId,
+      ownerAccountId: account._id,
       recipientAccountNumber,
       recipientName,
       bankName,
