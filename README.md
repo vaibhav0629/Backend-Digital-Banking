@@ -177,3 +177,69 @@ Header:
 Aditional Notes:
 
 - Endpoint ini menggunakan login token yang dapat diakses di POST `/api/auth/login` dan menaruhnya di header.
+
+### Cardless Components
+
+1. POST `localhost:<portNum>/api/cardless/deposit`. Menambahkan saldo melalui deposit, menyimpannya dalam rekening pilihan pengguna, serta mencatatnya dalam transaction history.
+
+Body:
+
+```json
+{
+		"amount": deposit amount
+}
+```
+
+Header:
+
+![Header image]()
+
+Result:
+
+```json
+{
+		"message": "Successful deposit"
+}
+
+```
+
+Additional Notes:
+
+- Untuk mengakses endpoint ini, anda harus terlebih dahulu memiliki account.
+- Amount harus diisi dan bersifat positif.
+- Token `Authorization` didapatkan melalui /api/auth/transaction.
+
+Example Result:
+![Example of User Login]()
+
+2. POST `localhost:<portNum>/api/cardless/withdraw`. Mengurangi saldo dari rekening pilihan pengguna melalui withdraw dan mencatatnya dalam transaction history.
+
+Body:
+
+```json
+{
+		"amount": withdraw amount
+}
+```
+
+Header:
+
+![Header image]()
+
+Result:
+
+```json
+{
+		"message": "Successful withdrawal"
+}
+
+```
+
+Additional Notes:
+
+- Untuk mengakses endpoint ini, anda harus terlebih dahulu memiliki account.
+- Amount harus diisi, bersifat positif, dan tidak melebihi jumlah saldo dalam rekening.
+- Token `Authorization` didapatkan melalui /api/auth/transaction.
+
+Example Result:
+![Example of User Login]()
