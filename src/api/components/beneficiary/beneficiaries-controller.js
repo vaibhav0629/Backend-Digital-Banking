@@ -4,6 +4,7 @@ const { errorResponder, errorTypes } = require('../../../core/errors');
 
 async function getBeneficiaries(req, res, next) {
   try {
+    // eslint-disable-next-line no-underscore-dangle
     const userId = req.user._id;
     const { accountType } = req.body;
 
@@ -32,6 +33,7 @@ async function getBeneficiaries(req, res, next) {
 
 async function createBeneficiaries(req, res, next) {
   try {
+    // eslint-disable-next-line no-underscore-dangle
     const userId = req.user._id;
 
     const {
@@ -56,6 +58,7 @@ async function createBeneficiaries(req, res, next) {
 
     const account = accountResult?.data || accountResult[0] || accountResult;
 
+    // eslint-disable-next-line no-underscore-dangle
     if (!account || !account._id) {
       throw errorResponder(
         errorTypes.UNPROCESSABLE_ENTITY,
@@ -64,6 +67,7 @@ async function createBeneficiaries(req, res, next) {
     }
 
     const newBeneficiary = await beneficiariesService.createBeneficiary({
+      // eslint-disable-next-line no-underscore-dangle
       ownerAccountId: account._id,
       recipientAccountNumber,
       recipientName,

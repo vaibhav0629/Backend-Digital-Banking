@@ -79,3 +79,35 @@ Additional Notes:
 
 Example Result:
 ![Example of User Login](https://github.com/EndlessWay1/images/blob/main/ExampleofUserLogin.png?raw=true)
+
+2. POST `localhost:<portNum>/api/auth/transaction`. Membuat transaction token untuk `user` agar dapat melakukan transaksi dengan token login, account `pin` dan `accountType`. Token ini hanya akan valid selama 15 menit karena security.
+
+Body:
+
+```json
+{
+  "pin": "yourAccountPin",
+  "accountType": "yourAccountType"
+}
+```
+
+Header:
+
+![Header image](https://github.com/EndlessWay1/images/blob/main/Data%20Header%20Transaction%20Token.png?raw=true)
+
+Result:
+
+```json
+{
+  "token": "yourTransactionToken"
+}
+```
+
+Aditional Notes:
+
+- Endpoint ini menggunakan login token yang dapat diakses di POST `/api/auth/login` dan menaruhnya di header.
+- Endpoint ini menggunakan Account yang telah dibuat sebelumnya pada POST `/api/accounts`.
+
+Example Result:
+
+![Example of Account Transaction Token](https://github.com/EndlessWay1/images/blob/main/Data%20Body%20Transaction%20Token%20Example.png?raw=true)
