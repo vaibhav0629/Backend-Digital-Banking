@@ -111,3 +111,69 @@ Aditional Notes:
 Example Result:
 
 ![Example of Account Transaction Token](https://github.com/EndlessWay1/images/blob/main/Data%20Body%20Transaction%20Token%20Example.png?raw=true)
+
+### Users Components
+
+Endpoints:
+
+1. GET `localhost:<portNum>/api/users`. Memberikan informasi Users dengan Token dari login.
+
+Header:
+
+![Header image](https://github.com/EndlessWay1/images/blob/main/Data%20Header%20Transaction%20Token.png?raw=true)
+
+Aditional Notes:
+
+- Endpoint ini menggunakan login token yang dapat diakses di POST `/api/auth/login` dan menaruhnya di header.
+
+2. PUT `localhost:<portNum>/api/users`. Mengupdate `full_name` atau `email`.
+
+Body:
+
+```json
+{
+  "email": "yourNewEmail",
+  "full_name": "yourNewName"
+}
+```
+
+Header:
+
+![Header image](https://github.com/EndlessWay1/images/blob/main/Data%20Header%20Transaction%20Token.png?raw=true)
+
+Aditional Notes:
+
+- Endpoint ini menggunakan login token yang dapat diakses di POST `/api/auth/login` dan menaruhnya di header.
+- `Email` disini harus belum pernah terdaftar di database.
+
+3. PUT `localhost:<portNum>/api/users/change-password`. Mengubah password `User` yang dibuat.
+
+Body:
+
+```json
+{
+  "old_password": "yourOldPassword",
+  "new_password": "yourNewPassword",
+  "confirm_new_password": "yourNewPassword"
+}
+```
+
+Header:
+
+![Header image](https://github.com/EndlessWay1/images/blob/main/Data%20Header%20Transaction%20Token.png?raw=true)
+
+Aditional Notes:
+
+- Endpoint ini menggunakan login token yang dapat diakses di POST `/api/auth/login` dan menaruhnya di header.
+- `old_password` dengan `new_password` tidak boleh sama.
+- `confirm_new_password` harus sama dengan `new_password`.
+
+3. DELETE `localhost:<portNum>/api/users`. Mendelete `user` yang ada di database.
+
+Header:
+
+![Header image](https://github.com/EndlessWay1/images/blob/main/Data%20Header%20Transaction%20Token.png?raw=true)
+
+Aditional Notes:
+
+- Endpoint ini menggunakan login token yang dapat diakses di POST `/api/auth/login` dan menaruhnya di header.
