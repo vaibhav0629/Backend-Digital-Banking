@@ -192,7 +192,7 @@ Body:
 
 Header:
 
-![Header image]()
+![Header image](https://github.com/user-attachments/assets/d8d52a51-1012-4b48-9f67-a2d36bcd4465)
 
 Result:
 
@@ -209,7 +209,7 @@ Additional Notes:
 - Token `Authorization` didapatkan melalui /api/auth/transaction.
 
 Example Result:
-![Example of User Login]()
+![Example of Deposit](https://github.com/user-attachments/assets/5975b333-ccfd-4f54-8d92-4d9b35738d35)
 
 2. POST `localhost:<portNum>/api/cardless/withdraw`. Mengurangi saldo dari rekening pilihan pengguna melalui withdraw dan mencatatnya dalam transaction history.
 
@@ -223,7 +223,7 @@ Body:
 
 Header:
 
-![Header image]()
+![Header image](https://github.com/user-attachments/assets/0eeb28f0-913c-401b-86e2-a56d7ae4a839)
 
 Result:
 
@@ -265,8 +265,11 @@ Result:
 
 Additional Notes:
 
-- To access this endpoint, you must first register to have a user.
-- To use this token, on header use `Authentication` with the value `JWT yourLoginToken`
+- To access this endpoint, you must first get a transaction token via POST /api/auth/transaction.
+- On header use Authorization with the value: "yourTransactionToken".
+- `recipientAccountNumber` must be an existing account number.
+- `amount` must be greater than zero and cannot exceed your current balance.
+- You cannot transfer to your own account.
 
 2. GET /api/transactions/history. Melihat daftar transaksi yang telah dilakukan sejauh ini.
 
@@ -296,5 +299,5 @@ Result:
 
 Additional Notes:
 
-- To access this endpoint, you must first register to have a user.
-- To use this token, on header use `Authentication` with the value `JWT yourLoginToken`
+- To access this endpoint, you must first obtain a transaction token via `POST /api/auth/transaction`.
+- On header use `Authorization` with the value: "yourTransactionToken".
