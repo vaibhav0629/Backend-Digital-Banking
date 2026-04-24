@@ -80,24 +80,26 @@ Additional Notes:
 Example Result:
 ![Example of User Login](https://github.com/EndlessWay1/images/blob/main/ExampleofUserLogin.png?raw=true)
 
-3. POST `localhost:<portNum>/api/transactions/transfer`.
+2. POST `localhost:<portNum>/api/auth/transaction`. Membuat transaction token untuk `user` agar dapat melakukan transaksi dengan token login, account `pin` dan `accountType`. Token ini hanya akan valid selama 15 menit karena security.
 
 Body:
 
 ```json
 {
-  "recipientAccountNumber": "existingAccountNumber",
-  "amount": yourAmount,
-  "description": "yourDescription"
+  "pin": "yourAccountPin",
+  "accountType": "yourAccountType"
 }
 ```
+
+Header:
+
+![Header image](https://github.com/EndlessWay1/images/blob/main/Data%20Header%20Transaction%20Token.png?raw=true)
 
 Result:
 
 ```json
 {
-  "status": "success",
-  "message": "Transfer successful"
+  "token": "yourTransactionToken"
 }
 ```
 
@@ -166,7 +168,7 @@ Aditional Notes:
 - `old_password` dengan `new_password` tidak boleh sama.
 - `confirm_new_password` harus sama dengan `new_password`.
 
-4. DELETE `localhost:<portNum>/api/users`. Mendelete `user` yang ada di database.
+3. DELETE `localhost:<portNum>/api/users`. Mendelete `user` yang ada di database.
 
 Header:
 
@@ -175,7 +177,6 @@ Header:
 Aditional Notes:
 
 - Endpoint ini menggunakan login token yang dapat diakses di POST `/api/auth/login` dan menaruhnya di header.
-
 
 ### Transaction Components
 
