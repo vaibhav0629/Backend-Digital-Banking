@@ -80,26 +80,24 @@ Additional Notes:
 Example Result:
 ![Example of User Login](https://github.com/EndlessWay1/images/blob/main/ExampleofUserLogin.png?raw=true)
 
-2. POST `localhost:<portNum>/api/auth/transaction`. Membuat transaction token untuk `user` agar dapat melakukan transaksi dengan token login, account `pin` dan `accountType`. Token ini hanya akan valid selama 15 menit karena security.
+3. POST `localhost:<portNum>/api/transactions/transfer`.
 
 Body:
 
 ```json
 {
-  "pin": "yourAccountPin",
-  "accountType": "yourAccountType"
+  "recipientAccountNumber": "existingAccountNumber",
+  "amount": yourAmount,
+  "description": "yourDescription"
 }
 ```
-
-Header:
-
-![Header image](https://github.com/EndlessWay1/images/blob/main/Data%20Header%20Transaction%20Token.png?raw=true)
 
 Result:
 
 ```json
 {
-  "token": "yourTransactionToken"
+  "status": "success",
+  "message": "Transfer successful"
 }
 ```
 
@@ -168,7 +166,7 @@ Aditional Notes:
 - `old_password` dengan `new_password` tidak boleh sama.
 - `confirm_new_password` harus sama dengan `new_password`.
 
-3. DELETE `localhost:<portNum>/api/users`. Mendelete `user` yang ada di database.
+4. DELETE `localhost:<portNum>/api/users`. Mendelete `user` yang ada di database.
 
 Header:
 
@@ -177,6 +175,67 @@ Header:
 Aditional Notes:
 
 - Endpoint ini menggunakan login token yang dapat diakses di POST `/api/auth/login` dan menaruhnya di header.
+
+
+### Transaction Components
+
+1. POST `/api/transactions/transfer`. Melakukan transfer dengan cara menginput nomor rekening tujuan, nominalnya dan deskripsinya (opsional)
+
+Body:
+``` json
+{
+  "recipientAccountNumber": "existingAccountNumber",
+  "amount": yourAmount,
+  "description": "yourDescription"
+}
+```
+
+Result:
+``` json
+{
+  "status": "success",
+  "message": "Transfer successful"
+}
+```
+
+
+Additional Notes:
+
+- To access this endpoint, you must first get a transaction token via POST `/api/auth/transaction`.
+- On header use Authorization with the value: `yourTransactionToken`.
+- `recipientAccountNumber` must be an existing account number.
+- amount must be greater than zero and cannot exceed your current balance.
+- You cannot transfer to your own account.
+
+2. GET `/api/transactions/history`. Melihat daftar transaksi yang telah dilakukan sejauh ini.
+
+Result:
+``` json
+{
+  "status": "success",
+  "message": "Transaction history retrieved",
+  "data": [
+    {
+      "_id": "yourId",
+      "fromAccount": "senderAccountNumber",
+      "toAccount": "recipientAccountNumber",
+      "type": "transfer",
+      "amount": yourAmount,
+      "description": "yourDescription",
+      "status": "success",
+      "processedAt": null,
+      "createdAt": "transactionTimeStamp",
+      "updatedAt": "transactionTimeStamp",
+      "__v": 0
+    }
+  ]
+}
+```
+
+Additional Notes:
+
+- To access this endpoint, you must first obtain a transaction token via POST `/api/auth/transaction`.
+- On header use Authorization with the value: `yourTransactionToken`.
 
 ### Cardless Components
 
@@ -241,3 +300,53 @@ Additional Notes:
 
 Example Result:
 ![Example of Withdraw](<img width="1366" height="768" alt="Screen Shot 2026-04-23 at 15 31 28" src="https://github.com/user-attachments/assets/dbdd9717-a052-4309-969f-3cd695c35fe0" />)
+
+
+### Beneficiaries Components
+
+1. POST `localhost:<portNum>/api/beneficiaries`
+Notes: user hanya bisa menambahkan beneficiaries berdasarkan transaksi yang sudah pernah dilakukan sebelumnya
+
+```json
+Body:
+{
+  "ownerAccountId": "accountId",
+  "recipientAccountNumber": "recipientId",
+  "recipientName": "name",
+  "bankName": "bankName",
+  "alias": "alias"
+}
+
+Result:
+{
+  message: "Beneficiary added successfully",
+  data: newBeneficiary
+}
+```
+2. GET `localhost:<portNum>/api/beneficiaries`
+
+``` json
+Body: 
+{
+  "userId": "",
+  "accountType": "saving", "invesment"
+}
+
+Result:
+{
+  message: 'List of Beneficiary',
+  data
+}
+```
+
+### Admin Components
+
+1. GET `localhost:<portNum>/api/admin/users`
+Notes: user harus memiliki role sebagai admin dan bukan user untuk mengakses endpoint ini, dan menggunakan token login
+
+
+Example Result:
+![Example of User Login]()
+
+2. GET `localhost:<portNum>/api/admin/transactions`
+Notes: user harus memiliki role sebagai admin dan bukan user untuk mengakses endpoint ini, dan menggunakan token login
