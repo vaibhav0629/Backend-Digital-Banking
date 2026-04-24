@@ -101,7 +101,6 @@ Result:
 }
 ```
 
-<<<<<<< HEAD
 Aditional Notes:
 
 - Endpoint ini menggunakan login token yang dapat diakses di POST `/api/auth/login` dan menaruhnya di header.
@@ -167,7 +166,7 @@ Aditional Notes:
 - `old_password` dengan `new_password` tidak boleh sama.
 - `confirm_new_password` harus sama dengan `new_password`.
 
-3. DELETE `localhost:<portNum>/api/users`. Mendelete `user` yang ada di database.
+4. DELETE `localhost:<portNum>/api/users`. Mendelete `user` yang ada di database.
 
 Header:
 
@@ -177,46 +176,42 @@ Aditional Notes:
 
 - Endpoint ini menggunakan login token yang dapat diakses di POST `/api/auth/login` dan menaruhnya di header.
 
-### Cardless Components
 
-1. POST `localhost:<portNum>/api/cardless/deposit`. Menambahkan saldo melalui deposit, menyimpannya dalam rekening pilihan pengguna, serta mencatatnya dalam transaction history.
+### Transaction Components
+
+1. POST `/api/transactions/transfer`. Melakukan transfer dengan cara menginput nomor rekening tujuan, nominalnya dan deskripsinya (opsional)
 
 Body:
-
-```json
+``` json
 {
-		"amount": deposit amount
+  "recipientAccountNumber": "existingAccountNumber",
+  "amount": yourAmount,
+  "description": "yourDescription"
 }
 ```
-
-Header:
-
-![Header image](https://github.com/user-attachments/assets/d8d52a51-1012-4b48-9f67-a2d36bcd4465)
 
 Result:
-
-```json
+``` json
 {
-  "message": "Successful deposit"
+  "status": "success",
+  "message": "Transfer successful"
 }
 ```
 
-=======
->>>>>>> 3458fe8f8a82d2371d109a9a644281e5430355d8
+
 Additional Notes:
 
-- To access this endpoint, you must first register to have a user.
-- To use this token, on header use `Authentication` with the value `JWT yourLoginToken`
+- To access this endpoint, you must first get a transaction token via POST `/api/auth/transaction`.
+- On header use Authorization with the value: `yourTransactionToken`.
+- `recipientAccountNumber` must be an existing account number.
+- amount must be greater than zero and cannot exceed your current balance.
+- You cannot transfer to your own account.
 
-4. GET `localhost:<portNum>/api/transactions/history`.
+2. GET `/api/transactions/history`. Melihat daftar transaksi yang telah dilakukan sejauh ini.
 
 Result:
-
-```json
+``` json
 {
-<<<<<<< HEAD
-  "message": "Successful withdrawal"
-=======
   "status": "success",
   "message": "Transaction history retrieved",
   "data": [
@@ -235,13 +230,81 @@ Result:
     }
   ]
 }
+```
 
 Additional Notes:
 
-- To access this endpoint, you must first register to have a user.
-- To use this token, on header use `Authentication` with the value `JWT yourLoginToken`
+- To access this endpoint, you must first obtain a transaction token via POST `/api/auth/transaction`.
+- On header use Authorization with the value: `yourTransactionToken`.
+
+### Cardless Components
+
+1. POST `localhost:<portNum>/api/cardless/deposit`. Menambahkan saldo melalui deposit, menyimpannya dalam rekening pilihan pengguna, serta mencatatnya dalam transaction history.
+
+Body:
+
+```json
+{
+		"amount": deposit amount
+}
 ```
-5. POST `localhost:<portNum>/api/beneficiaries`
+
+Header:
+
+![Header image](<img width="586" height="76" alt="Screen Shot 2026-04-23 at 12 31 07" src="https://github.com/user-attachments/assets/d8d52a51-1012-4b48-9f67-a2d36bcd4465" />)
+
+Result:
+
+```json
+{
+  "message": "Successful deposit"
+}
+```
+
+Additional Notes:
+
+- Untuk mengakses endpoint ini, anda harus terlebih dahulu memiliki account.
+- Amount harus diisi dan bersifat positif.
+- Token `Authorization` didapatkan melalui /api/auth/transaction.
+
+Example Result:
+![Example of Deposit](<img width="1366" height="768" alt="Screen Shot 2026-04-23 at 15 31 07" src="https://github.com/user-attachments/assets/5975b333-ccfd-4f54-8d92-4d9b35738d35" />)
+
+2. POST `localhost:<portNum>/api/cardless/withdraw`. Mengurangi saldo dari rekening pilihan pengguna melalui withdraw dan mencatatnya dalam transaction history.
+
+Body:
+
+```json
+{
+		"amount": withdraw amount
+}
+```
+
+Header:
+
+![Header image](<img width="586" height="76" alt="Screen Shot 2026-04-23 at 12 31 07" src="https://github.com/user-attachments/assets/0eeb28f0-913c-401b-86e2-a56d7ae4a839" />)
+
+Result:
+
+```json
+{
+  "message": "Successful withdrawal"
+}
+```
+
+Additional Notes:
+
+- Untuk mengakses endpoint ini, anda harus terlebih dahulu memiliki account.
+- Amount harus diisi, bersifat positif, dan tidak melebihi jumlah saldo dalam rekening.
+- Token `Authorization` didapatkan melalui /api/auth/transaction.
+
+Example Result:
+![Example of Withdraw](<img width="1366" height="768" alt="Screen Shot 2026-04-23 at 15 31 28" src="https://github.com/user-attachments/assets/dbdd9717-a052-4309-969f-3cd695c35fe0" />)
+
+
+### Beneficiaries Components
+
+1. POST `localhost:<portNum>/api/beneficiaries`
 Notes: user hanya bisa menambahkan beneficiaries berdasarkan transaksi yang sudah pernah dilakukan sebelumnya
 
 ```json
@@ -260,7 +323,7 @@ Result:
   data: newBeneficiary
 }
 ```
-6. GET `localhost:<portNum>/api/beneficiaries`
+2. GET `localhost:<portNum>/api/beneficiaries`
 
 ``` json
 Body: 
@@ -273,81 +336,17 @@ Result:
 {
   message: 'List of Beneficiary',
   data
->>>>>>> 3458fe8f8a82d2371d109a9a644281e5430355d8
 }
 ```
 
-7. GET `localhost:<portNum>/api/admin/users`
+### Admin Components
+
+1. GET `localhost:<portNum>/api/admin/users`
 Notes: user harus memiliki role sebagai admin dan bukan user untuk mengakses endpoint ini, dan menggunakan token login
 
-<<<<<<< HEAD
-- Untuk mengakses endpoint ini, anda harus terlebih dahulu memiliki account.
-- Amount harus diisi, bersifat positif, dan tidak melebihi jumlah saldo dalam rekening.
-- Token `Authorization` didapatkan melalui /api/auth/transaction.
 
 Example Result:
 ![Example of User Login]()
 
-### Transaction Components
-
-1. POST /api/transactions/transfer. Melakukan transfer dengan cara menginput nomor rekening tujuan, nominalnya dan deskripsinya (opsional)
-
-Body:
-
-```json
-{
-  "recipientAccountNumber": "existingAccountNumber",
-  "amount": yourAmount,
-  "description": "yourDescription"
-}
-
-Result:
-{
-  "status": "success",
-  "message": "Transfer successful"
-}
-
-```
-
-Additional Notes:
-
-- To access this endpoint, you must first get a transaction token via POST /api/auth/transaction.
-- On header use Authorization with the value: "yourTransactionToken".
-- `recipientAccountNumber` must be an existing account number.
-- `amount` must be greater than zero and cannot exceed your current balance.
-- You cannot transfer to your own account.
-
-2. GET /api/transactions/history. Melihat daftar transaksi yang telah dilakukan sejauh ini.
-
-Result:
-
-```json
-{
-  "status": "success",
-  "message": "Transaction history retrieved",
-  "data": [
-    {
-      "_id": "yourId",
-      "fromAccount": "senderAccountNumber",
-      "toAccount": "recipientAccountNumber",
-      "type": "transfer",
-      "amount": yourAmount,
-      "description": "yourDescription",
-      "status": "success",
-      "processedAt": null,
-      "createdAt": "transactionTimeStamp",
-      "updatedAt": "transactionTimeStamp",
-      "__v": 0
-    }
-  ]
-}
-```
-
-Additional Notes:
-
-- To access this endpoint, you must first obtain a transaction token via `POST /api/auth/transaction`.
-- On header use `Authorization` with the value: "yourTransactionToken".
-=======
-8. GET `localhost:<portNum>/api/admin/transactions`
+2. GET `localhost:<portNum>/api/admin/transactions`
 Notes: user harus memiliki role sebagai admin dan bukan user untuk mengakses endpoint ini, dan menggunakan token login
->>>>>>> 3458fe8f8a82d2371d109a9a644281e5430355d8
