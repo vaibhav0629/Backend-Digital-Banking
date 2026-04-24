@@ -168,7 +168,7 @@ Aditional Notes:
 - `old_password` dengan `new_password` tidak boleh sama.
 - `confirm_new_password` harus sama dengan `new_password`.
 
-3. DELETE `localhost:<portNum>/api/users`. Mendelete `user` yang ada di database.
+4. DELETE `localhost:<portNum>/api/users`. Mendelete `user` yang ada di database.
 
 Header:
 
